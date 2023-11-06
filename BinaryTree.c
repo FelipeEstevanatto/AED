@@ -38,18 +38,14 @@ void insert(Tree *tree, int value) {
         return;
       }
       current = current->left;
-    // If value is greater than current node value, go right
-    } else if (value > current->value) {
+    // If value is greater or equal than current node value, go right
+    } else {
       if (current->right == NULL) {
         current->right = node;
         tree->size++;
         return;
       }
       current = current->right;
-    // If value is equal to current node value, do nothing
-    } else {
-      free(node);
-      return;
     }
   }
 }
@@ -70,13 +66,25 @@ Node* search(Tree *tree, int value) {
 }
 
 // Print tree
-void print(Node *node) {
+void printTree(Node *node, int space) {
+  // Base case: if the node is null, don't print anything
   if (node == NULL) {
     return;
   }
-  print(node->left);
-  printf("%d ", node->value);
-  print(node->right);
+  
+  // Increase distance between levels
+  space += 10;
+
+  // Print right child first (right subtree is on top)
+  printTree(node->right, space);
+
+  // Print current node
+  // printf the amount of spaces - 10
+  printf("%*s", space - 10, " ");
+  printf("%d\n", node->value);
+
+  // Print left child
+  printTree(node->left, space);
 }
 
 int main(void) {
@@ -91,8 +99,14 @@ int main(void) {
   insert(tree, 3);
   insert(tree, 7);
   insert(tree, 12);
+  insert(tree, 22);
+  insert(tree, 6);
+  insert(tree, 6);
+  insert(tree, 6);
+  insert(tree, 6);
+  insert(tree, 6);
 
-  print(tree->root);
+  printTree(tree->root, 0);
   printf("\n");
 
   Node *node = search(tree, 7);
