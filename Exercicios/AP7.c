@@ -72,16 +72,6 @@ void search(Tree *tree, int value) {
   printf("-1");
 }
 
-// Print tree
-void print(Node *node) {
-  if (node == NULL) {
-    return;
-  }
-  print(node->left);
-  printf("%d ", node->value);
-  print(node->right);
-}
-
 // Print tree pre order (ascending order)
 void preOrder(Node *node) {
   if (node == NULL) {
