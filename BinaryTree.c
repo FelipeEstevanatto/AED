@@ -65,6 +65,65 @@ Node* search(Tree *tree, int value) {
   return NULL;
 }
 
+// Remove node from tree
+void removeNode(Tree *tree, int value) {
+  Node *current = tree->root;
+  Node *parent = NULL;
+  while (current != NULL) {
+    if (value < current->value) {
+      parent = current;
+      current = current->left;
+    } else if (value > current->value) {
+      parent = current;
+      current = current->right;
+    } else {
+      // Case 1: no children
+      if (current->left == NULL && current->right == NULL) {
+        if (parent == NULL) {
+          tree->root = NULL;
+        } else if (parent->left == current) {
+          parent->left = NULL;
+        } else {
+          parent->right = NULL;
+        }
+        free(current);
+        tree->size--;
+        return;
+      }
+      // Case 2: one child
+      if (current->left == NULL || current->right == NULL) {
+        Node *child = current->left != NULL ? current->left : current->right;
+        if (parent == NULL) {
+          tree->root = child;
+        } else if (parent->left == current) {
+          parent->left = child;
+        } else {
+          parent->right = child;
+        }
+        free(current);
+        tree->size--;
+        return;
+      }
+      // Case 3: two children
+      Node *successor = current->right;
+      Node *successorParent = current;
+      while (successor->left != NULL) {
+        successorParent = successor;
+        successor = successor->left;
+      }
+      current->value = successor->value;
+      if (successorParent->left == successor) {
+        successorParent->left = successor->right;
+      } else {
+        successorParent->right = successor->right;
+      }
+      free(successor);
+      tree->size--;
+      return;
+    }
+  }
+}
+
 // Print tree
 void printTree(Node *node, int space) {
   // Base case: if the node is null, don't print anything
