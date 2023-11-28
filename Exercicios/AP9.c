@@ -1,3 +1,4 @@
+// ATIVIDADE PRÁTICA 9 - Diretório de Arquivos
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,8 +52,8 @@ Node *search(Node *root, char nameSearch[MAX_SIZE]) {
     return NULL;
 }
 
-int insertNode(Node *raiz, char nodeName[MAX_SIZE], char parentName[MAX_SIZE]) {
-    Node *parent = search(raiz, parentName);
+int insertNode(Node *root, char nodeName[MAX_SIZE], char parentName[MAX_SIZE]) {
+    Node *parent = search(root, parentName);
     if (parent == NULL)
         return 0;
  
@@ -122,7 +123,6 @@ int main() {
     // Read input
     scanf("%d", &nOfOperations);
     scanf("%s", searchFile);
-    getchar();
     
     char operation[3], name[MAX_SIZE], parentName[MAX_SIZE];
  
