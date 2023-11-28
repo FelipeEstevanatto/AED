@@ -82,12 +82,10 @@ void removeNode(Node *root, char name[MAX_SIZE]) {
         parentOfRemove->child = nodeToRemove->sibling;
     } else {
         Node *current = parentOfRemove->child;
-        while (current->sibling != NULL && current->sibling != nodeToRemove) {
+        while (current->sibling != nodeToRemove) {
             current = current->sibling;
         }
-        if (current->sibling == nodeToRemove) {
-            current->sibling = nodeToRemove->sibling;
-        }
+        current->sibling = nodeToRemove->sibling;
     }
     free(nodeToRemove);
 }
