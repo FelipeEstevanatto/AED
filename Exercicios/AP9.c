@@ -11,7 +11,8 @@ typedef struct Node {
     struct Node *sibling;
     struct Node *parent;
 } Node;
- 
+
+// Create node
 Node *createNode(char name[MAX_SIZE]) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     strcpy(newNode->name, name);
@@ -20,38 +21,34 @@ Node *createNode(char name[MAX_SIZE]) {
     newNode->parent = NULL;
     return newNode;
 }
- 
-Node *search(Node *root, char nameSearch[MAX_SIZE]) {
-    if (root == NULL) {
-		return NULL;
-	}
-    Node *aux;
 
-	if (strcmp(root->name, nameSearch) == 0) {
-		return root;
-	}
-	if (root->name[0] == '\\') {
-        aux = search(root->child, nameSearch);
-    
-        if (aux != NULL) {
-            return aux;
+// Function to search for a node with a specific name in a tree
+Node *search(Node *node, char nameSearch[MAX_SIZE]) {
+    if (node == NULL) {
+        return NULL;
+    }
+
+    if (strcmp(node->name, nameSearch) == 0) {
+        return node;
+    }
+
+    // Recursively search the child's subtree
+    if (node->child != NULL) {
+        Node *found = search(node->child, nameSearch);
+        if (found != NULL) {
+            return found;
         }
     }
-    while (root->sibling != NULL) {
-        root = root->sibling;
-        if (strcmp(root->name, nameSearch) == 0)
-            return root;
-    
-        if (root->name[0] == '\\') {
-            aux = search(root->child, nameSearch);
-            if (aux != NULL)
-            return aux;
-        }
+
+    // Recursively search the sibling's subtree
+    if (node->sibling != NULL) {
+        return search(node->sibling, nameSearch);
     }
 
     return NULL;
 }
 
+// Insert node to tree
 int insertNode(Node *root, char nodeName[MAX_SIZE], char parentName[MAX_SIZE]) {
     Node *parent = search(root, parentName);
     if (parent == NULL)
@@ -73,6 +70,7 @@ int insertNode(Node *root, char nodeName[MAX_SIZE], char parentName[MAX_SIZE]) {
     return 1;
 }
 
+// Remove node from tree
 void removeNode(Node *root, char name[MAX_SIZE]) {
     Node *nodeToRemove = search(root, name);
     if (nodeToRemove == NULL || nodeToRemove->parent == NULL)
@@ -106,6 +104,7 @@ void printPath(Node *nodeSearch) {
     }
 }
 
+// Free tree
 void freeTree(Node *node) {
     if (node == NULL) {
         return;
