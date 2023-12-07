@@ -50,19 +50,15 @@ void insert(Tree *tree, int value) {
   }
 }
 
-// Search node in tree
-Node* search(Tree *tree, int value) {
-  Node *current = tree->root;
-  while (current != NULL) {
-    if (value < current->value) {
-      current = current->left;
-    } else if (value > current->value) {
-      current = current->right;
-    } else {
-      return current;
-    }
-  }
-  return NULL;
+// Recursive search node in tree
+Node* search(Node* node, int value) {
+  if (node == NULL || node->value == value)
+    return node;
+
+  if (value < node->value)
+    return search(node->left, value);
+
+  return search(node->right, value);
 }
 
 // Remove node from tree
@@ -168,14 +164,14 @@ int main(void) {
   printTree(tree->root, 0);
   printf("\n");
 
-  Node *node = search(tree, 7);
+  Node *node = search(tree->root, 7);
   if (node != NULL) {
     printf("Valor encontrado: %d\n", node->value);
   } else {
     printf("Valor nao encontrado\n");
   }
 
-  node = search(tree, 20);
+  node = search(tree->root, 20);
   if (node != NULL) {
     printf("Valor encontrado: %d\n", node->value);
   } else {
