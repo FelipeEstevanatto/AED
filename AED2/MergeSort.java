@@ -8,15 +8,12 @@ import java.io.File;
 import java.util.stream.Collectors;
 import java.io.FileNotFoundException;
 
-// Average complexity: O(n^2)
-// Worst case complexity: O(n^2)
-
-public class InsertionSort {
+public class MergeSort {
 
     private static final int MAX_SIZE = 1000000;
 
     public static void main(String args[]) {
-        String fileName = "dataset_95_sorted.txt";
+        String fileName = "dataset_non_ascending.txt";
         if (args.length != 0) {
             fileName = args[0];
         }
@@ -25,7 +22,7 @@ public class InsertionSort {
             int[] dataset = readDataset(fileName);
 
             long startTime = System.currentTimeMillis();
-            insertionSort(dataset);
+            mergeSort(dataset);
             long endTime = System.currentTimeMillis();
 
             long elapsedTime = endTime - startTime;
@@ -43,24 +40,52 @@ public class InsertionSort {
         Scanner scanner = new Scanner(file);
         List<Integer> numbers = new ArrayList<>();
         while (scanner.hasNext()) {
-            if (numbers.size() == MAX_SIZE) {
-                break;
-            }
             numbers.add(scanner.nextInt());
         }
         scanner.close();
         return numbers.stream().mapToInt(i -> i).toArray();
     }
 
-    public static void insertionSort(int[] numbers) {
-        for (int currentIndex = 1; currentIndex < numbers.length; currentIndex++) {
-            int currentNumber = numbers[currentIndex];
-            int previousIndex = currentIndex - 1;
-            while (previousIndex >= 0 && numbers[previousIndex] > currentNumber) {
-                numbers[previousIndex + 1] = numbers[previousIndex];
-                previousIndex = previousIndex - 1;
+    public static void mergeSort(int[] list) {
+        if (list.length > 1) {
+            int mid = list.length / 2;
+            int[] left = Arrays.copyOfRange(list, 0, mid);
+            int[] right = Arrays.copyOfRange(list, mid, list.length);
+
+            mergeSort(left);
+            mergeSort(right);
+
+            merge(list, left, right);
+        }
+
+    }
+
+    public static void merge(int[] mainArray, int[] leftArray, int[] rightArray) {
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int mainIndex = 0;
+    
+        while (leftIndex < leftArray.length && rightIndex < rightArray.length) {
+            if (leftArray[leftIndex] < rightArray[rightIndex]) {
+                mainArray[mainIndex] = leftArray[leftIndex];
+                leftIndex++;
+            } else {
+                mainArray[mainIndex] = rightArray[rightIndex];
+                rightIndex++;
             }
-            numbers[previousIndex + 1] = currentNumber;
+            mainIndex++;
+        }
+    
+        while (leftIndex < leftArray.length) {
+            mainArray[mainIndex] = leftArray[leftIndex];
+            leftIndex++;
+            mainIndex++;
+        }
+    
+        while (rightIndex < rightArray.length) {
+            mainArray[mainIndex] = rightArray[rightIndex];
+            rightIndex++;
+            mainIndex++;
         }
     }
 }
