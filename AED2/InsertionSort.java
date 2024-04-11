@@ -9,9 +9,16 @@ import java.util.stream.Collectors;
 
 
 public class InsertionSort {
+
+    private static final int MAX_SIZE = 1000000;
+
     public static void main(String args[]) {
         // Get dataset
-        String fileName = "dataset.txt";
+        String fileName = "dataset_95_sorted.txt";
+        if (args.length != 0) {
+            fileName = args[0];
+        }
+
         int[] dataset = readDataset(fileName);
 
         long startTime = System.nanoTime();
@@ -19,15 +26,12 @@ public class InsertionSort {
         long endTime = System.nanoTime();
 
         long elapsedTime = endTime - startTime;
-        // Print it
-        // for (int i = 0; i < newList.length; i++) {
-        //     System.out.println(newList[i]);
-        // }
-        System.out.println("Elapsed time: " + elapsedTime + " nanoseconds");
+
+        System.out.println("Elapsed time: " + elapsedTime/1000000 + " miliseconds");
     }
 
     public static int[] readDataset(String filename) {
-        int[] records = new int[1000000];
+        int[] records = new int[MAX_SIZE];
         File file = new File(filename);
         try {
             Scanner scanner = new Scanner(file);
