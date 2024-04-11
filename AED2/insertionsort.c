@@ -14,7 +14,7 @@ int main() {
         return 0;
     }
 
-    arquivo = fopen("./dados_descrescente.txt", "r");
+    arquivo = fopen("./dados_semi_ordenados.txt", "r");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
         return 0;

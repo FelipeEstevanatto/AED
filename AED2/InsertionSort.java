@@ -31,21 +31,21 @@ public class InsertionSort {
     }
 
     public static int[] readDataset(String filename) {
-        int[] records = new int[MAX_SIZE];
-        File file = new File(filename);
+        // Read txt file (integers separated by new space)
         try {
+            File file = new File(filename);
             Scanner scanner = new Scanner(file);
-            int i = 0;
-            while (scanner.hasNextLine()) {
-                records[i] = Integer.parseInt(scanner.nextLine());
-                i++;
+            List<Integer> list = new ArrayList<Integer>();
+            while (scanner.hasNext()) {
+                list.add(scanner.nextInt());
             }
             scanner.close();
+            return list.stream().mapToInt(i -> i).toArray();
         } catch (Exception e) {
+            System.out.println("An error occurred.");
             e.printStackTrace();
+            return new int[0];
         }
-
-        return records;
     }
 
     public static int[] insertionSort(int[] list) {
