@@ -4,6 +4,9 @@
 
 #define MAX 1000000
 
+// Average complexity: O(n^2)
+// Worst case complexity: O(n^2)
+
 int main() {
     FILE *arquivo;
     int* vetor = malloc(MAX * sizeof(int));
@@ -28,16 +31,17 @@ int main() {
     fclose(arquivo);
 
     executionTime = clock();
-    int j, aux;
-    for (int i = 1; i < tamanho; i++) {
-        j = i - 1;
-        aux = vetor[i];
-
-        while (j >= 0 && aux < vetor[j]) {
-            vetor[j + 1] = vetor[j];
-            j--;
+    executionTime = clock();
+    int currentIndex, currentValue;
+    for (int sortedIndex = 1; sortedIndex < arraySize; sortedIndex++) {
+        currentIndex = sortedIndex - 1;
+        currentValue = array[sortedIndex];
+    
+        while (currentIndex >= 0 && currentValue < array[currentIndex]) {
+            array[currentIndex + 1] = array[currentIndex];
+            currentIndex--;
         }
-        vetor[j + 1] = aux;
+        array[currentIndex + 1] = currentValue;
     }
 
     executionTime = clock() - executionTime;
