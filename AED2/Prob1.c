@@ -6,14 +6,24 @@ strings podem ter comprimentos diferentes, um caractere adicional (espaço em br
 decimal, por exemplo) pode ser utilizado para preencher posições vazias de strings mais curtas,
 para que todas strings tenham o mesmo comprimento d (tamanho da maior string).
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-
 #define MAX_STRING 15
+#define CHAR_RANGE 27
+#define CHAR_OFFSET 97
+
+int getMaxLen(char arr[][MAX_STRING], int arrSize) {
+    int maxLen = 0;
+    for (int i = 0; i < arrSize; i++) {
+        if (strlen(arr[i]) > maxLen) {
+            maxLen = strlen(arr[i]);
+        }
+    }
+    return maxLen;
+}
 
 void countingSort(char arr[][MAX_STRING], char output[][MAX_STRING], int arrSize, int index) {
     int *count = (int *)calloc(27, sizeof(int)); // 26 letters + 1 for spaces
@@ -75,18 +85,10 @@ int main() {
     scanf("%d", &nOfNames);
 
     char names[nOfNames][MAX_STRING];
-    int maxLen = 0;
     for (int i = 0; i < nOfNames; i++) {
         scanf("%s", names[i]);
-        if (strlen(names[i]) > maxLen) {
-            maxLen = strlen(names[i]);
-        }
     }
-    for (int i = 0; i < nOfNames; i++) {
-        for (int j = strlen(names[i]); j < maxLen; j++) {
-            names[i][j] = ' ';
-        }
-    }
+    maxLen = getMaxLen(names, nOfNames);
 
     int searchIndex, limit;
     scanf("%d", &searchIndex);
