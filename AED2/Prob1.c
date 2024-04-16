@@ -11,108 +11,108 @@ para que todas strings tenham o mesmo comprimento d (tamanho da maior string).
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_STRING 15
+#define MAX_STRING_LENGTH 15
 #define CHAR_RANGE 27
-#define CHAR_OFFSET 97
+#define ASCII_OFFSET 97
 
-int getMaxLen(char arr[][MAX_STRING], int arrSize) {
+int getMaxLen(char arr[][MAX_STRING_LENGTH], int arrSize) {
     int maxLen = 0;
+    int len;
     for (int i = 0; i < arrSize; i++) {
-        if (strlen(arr[i]) > maxLen) {
-            maxLen = strlen(arr[i]);
+        len = strlen(arr[i]);
+        if (len > maxLen) {
+            maxLen = len;
         }
     }
     return maxLen;
 }
 
 // Counting sort for strings
-void countingSort(char arr[][MAX_STRING], char output[][MAX_STRING], int arrSize, int index) {
+void countingSort(char inputArray[][MAX_STRING_LENGTH], char sortedArray[][MAX_STRING_LENGTH], int numberOfNames, int index) {
     int count[CHAR_RANGE]; // 26 letters + 1 for spaces
     for (int i = 0; i < CHAR_RANGE; i++) {
         count[i] = 0;
     }
 
     // Count the occurrence of each character at position index
-    int idx;
-    for (int j = 0; j < arrSize; j++) {
-        if (arr[j][index] == ' ') {
-            idx = 0; // Use the first position for spaces
+    int characterIndex;
+    for (int j = 0; j < numberOfNames; j++) {
+        if (inputArray[j][index] == ' ') {
+            characterIndex = 0; // Use the first position for spaces
         } else {
-            idx = tolower(arr[j][index]) - CHAR_OFFSET + 1; // Letters start from index 1
+            characterIndex = tolower(inputArray[j][index]) - ASCII_OFFSET + 1; // Letters start from index 1
         }
-        count[idx]++;
+        count[characterIndex]++;
     }
 
     // Calculate the cumulative count
     for (int j = 1; j < CHAR_RANGE; j++) {
         count[j] += count[j - 1];
     }
-    // Cumulativo de ESPAÇO até a-z
+    // Cumulative of space to a-z
     printf("%d ", count[0]);
     for (int j = 1; j < CHAR_RANGE; j++) {
         printf("%d ", count[j]);
     }
     printf("\n");
     // Loop the input array in reverse order
-    for (int j = arrSize - 1; j >= 0; j--) {
-        if (arr[j][index] == ' ') {
-            idx = 0;
+    for (int j = numberOfNames - 1; j >= 0; j--) {
+        if (inputArray[j][index] == ' ') {
+            characterIndex = 0;
         } else {
-            idx = tolower(arr[j][index]) - CHAR_OFFSET + 1;
+            characterIndex = tolower(inputArray[j][index]) - ASCII_OFFSET + 1;
         }
-        strcpy(output[count[idx] - 1], arr[j]);
-        count[idx]--;
+        strcpy(sortedArray[count[characterIndex] - 1], inputArray[j]);
+        count[characterIndex]--;
     }
 }
 
-void radixSort(char arr[][MAX_STRING], int arrSize, int maxLen) {
-    char output[arrSize][MAX_STRING];
+void radixSort(char namesArray[][MAX_STRING_LENGTH], int numberOfNames, int maxLength) {
+    char output[numberOfNames][MAX_STRING_LENGTH];
 
     // Start from the last character and move to the first
-    for (int i = maxLen - 1; i >= 0; i--) {
-        countingSort(arr, output, arrSize, i);
+    for (int i = maxLength - 1; i >= 0; i--) {
+        countingSort(namesArray, output, numberOfNames, i);
 
         // Copy the output array to arr so that the next iteration
         // can sort the strings according to the next character
-        for (int j = 0; j < arrSize; j++) {
-            strcpy(arr[j], output[j]);
+        for (int j = 0; j < numberOfNames; j++) {
+            strcpy(namesArray[j], output[j]);
         }
     }
 }
 
 int main() {
 
-    int nOfNames;
+    int numberOfNames;
 
-    scanf("%d", &nOfNames);
+    scanf("%d", &numberOfNames);
 
-    char names[nOfNames][MAX_STRING];
-    for (int i = 0; i < nOfNames; i++) {
+    char names[numberOfNames][MAX_STRING_LENGTH];
+    for (int i = 0; i < numberOfNames; i++) {
         scanf("%s", names[i]);
+        for(int j = 0; names[i][j]; j++){
+            names[i][j] = tolower(names[i][j]);
+        }
     }
-    int maxLen = getMaxLen(names, nOfNames);
+    int maxLength = getMaxLen(names, numberOfNames);
 
     // fill the strings with spaces
-    for (int i = 0; i < nOfNames; i++) {
-        for (int j = strlen(names[i]); j < maxLen; j++) {
+    for (int i = 0; i < numberOfNames; i++) {
+        for (int j = strlen(names[i]); j < maxLength; j++) {
             names[i][j] = ' ';
         }
-        names[i][maxLen] = '\0';
+        names[i][maxLength] = '\0';
     }
 
     int searchIndex, limit;
     scanf("%d", &searchIndex);
     scanf("%d", &limit);
 
-    radixSort(names, nOfNames, maxLen);
+    radixSort(names, numberOfNames, maxLength);
 
     for (int i = searchIndex - 1; i < searchIndex + limit - 1; i++) {
-        char lowerName[256];
-        strcpy(lowerName, names[i]);
-        for(int j = 0; lowerName[j]; j++){
-            lowerName[j] = tolower(lowerName[j]);
-        }
-        printf("%s\n", lowerName);
+        printf("%s\n", names[i]);
     }
 
     return 0;
