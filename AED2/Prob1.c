@@ -56,13 +56,13 @@ void countingSort(char inputArray[][MAX_STRING_LENGTH], char sortedArray[][MAX_S
     }
     printf("\n");
     // Loop the input array in reverse order
-    for (int j = numberOfNames - 1; j >= 0; j--) {
-        if (inputArray[j][index] == ' ') {
+    for (int name = numberOfNames - 1; name >= 0; name--) {
+        if (inputArray[name][index] == ' ') {
             characterIndex = 0;
         } else {
-            characterIndex = tolower(inputArray[j][index]) - ASCII_OFFSET + 1;
+            characterIndex = tolower(inputArray[name][index]) - ASCII_OFFSET + 1;
         }
-        strcpy(sortedArray[count[characterIndex] - 1], inputArray[j]);
+        strcpy(sortedArray[count[characterIndex] - 1], inputArray[name]);
         count[characterIndex]--;
     }
 }
