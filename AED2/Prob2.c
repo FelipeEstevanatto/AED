@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Node of the heap
 typedef struct {
     int value;
     int vector_idx;
@@ -13,6 +14,7 @@ typedef struct {
     int capacity;
 } MinHeap;
 
+// Create a min heap
 MinHeap* createMinHeap(int capacity) {
     MinHeap *heap = (MinHeap *) malloc(sizeof(MinHeap));
     heap->nodes = (HeapNode *) malloc(capacity * sizeof(HeapNode));
@@ -21,16 +23,18 @@ MinHeap* createMinHeap(int capacity) {
     return heap;
 }
 
+// Swap two nodes
 void swap(HeapNode *a, HeapNode *b) {
     HeapNode temp = *a;
     *a = *b;
     *b = temp;
 }
 
-void heapifyDown(MinHeap *heap, int idx) {
-    int smallest = idx;
-    int left = 2 * idx + 1;
-    int right = 2 * idx + 2;
+// Heapify the heap from the given index
+void heapifyDown(MinHeap *heap, int index) {
+    int smallest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
     
     if (left < heap->size && heap->nodes[left].value < heap->nodes[smallest].value)
         smallest = left;
@@ -38,27 +42,31 @@ void heapifyDown(MinHeap *heap, int idx) {
     if (right < heap->size && heap->nodes[right].value < heap->nodes[smallest].value)
         smallest = right;
     
-    if (smallest != idx) {
-        swap(&heap->nodes[idx], &heap->nodes[smallest]);
+    // If the smallest node is not the current node, swap them and heapify the new node
+    if (smallest != index) {
+        swap(&heap->nodes[index], &heap->nodes[smallest]);
         heapifyDown(heap, smallest);
     }
 }
 
-void heapifyUp(MinHeap *heap, int idx) {
-    int parent = (idx - 1) / 2;
+// Heapify the heap from the given index
+void heapifyUp(MinHeap *heap, int index) {
+    int parent = (index - 1) / 2;
     
-    if (idx && heap->nodes[idx].value < heap->nodes[parent].value) {
-        swap(&heap->nodes[idx], &heap->nodes[parent]);
+    if (index && heap->nodes[index].value < heap->nodes[parent].value) {
+        swap(&heap->nodes[index], &heap->nodes[parent]);
         heapifyUp(heap, parent);
     }
 }
 
+// Insert a node in the heap and heapify it up
 void insertHeap(MinHeap *heap, HeapNode node) {
     heap->nodes[heap->size] = node;
     heap->size++;
     heapifyUp(heap, heap->size - 1);
 }
 
+// Extract the minimum node from the heap and heapify it down
 HeapNode extractMin(MinHeap *heap) {
     HeapNode root = heap->nodes[0];
     heap->nodes[0] = heap->nodes[heap->size - 1];
@@ -76,16 +84,17 @@ int main() {
     
     MinHeap *heap = createMinHeap(nOfSequences);
     
-    for (int j = 0; j < nOfSequences; j++) {
+    // Read the sequences and insert the first element of each sequence in the heap
+    for (int sequenceIndex = 0; sequenceIndex < nOfSequences; sequenceIndex++) {
         int size;
         scanf("%d", &size);
-        sizes[j] = size;
-        vectors[j] = (int *) malloc(size * sizeof(int));
+        sizes[sequenceIndex] = size;
+        vectors[sequenceIndex] = (int *) malloc(size * sizeof(int));
         for (int k = 0; k < size; k++) {
-            scanf("%d", &vectors[j][k]);
+            scanf("%d", &vectors[sequenceIndex][k]);
         }
         if (size > 0) {
-            HeapNode node = {vectors[j][0], j, 0};
+            HeapNode node = {vectors[sequenceIndex][0], sequenceIndex, 0};
             insertHeap(heap, node);
         }
     }
@@ -96,7 +105,7 @@ int main() {
             for (int j = 0; j < heap->size; j++) {
                 remainingValues[j] = heap->nodes[j].value;
             }
-            // Sort the remaining values
+            // Sort the remaining values with a simple bubble sort
             for (int j = 0; j < heap->size - 1; j++) {
                 for (int k = j + 1; k < heap->size; k++) {
                     if (remainingValues[j] > remainingValues[k]) {
@@ -106,6 +115,7 @@ int main() {
                     }
                 }
             }
+            // Print the remaining values
             for (int j = 0; j < heap->size; j++) {
                 if (j > 0) printf(" ");
                 printf("%d", remainingValues[j]);
@@ -123,6 +133,7 @@ int main() {
         }
     }
     
+    // Free the allocated memory
     for (int j = 0; j < nOfSequences; j++) {
         free(vectors[j]);
     }
