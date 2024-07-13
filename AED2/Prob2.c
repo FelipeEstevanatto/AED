@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+Min Heap Structure
+The Min Heap is a binary tree where the parent node is always smaller than the child nodes.
+*/
+
 // Node of the heap
 typedef struct {
     int value;
@@ -30,7 +35,7 @@ void swap(HeapNode *a, HeapNode *b) {
     *b = temp;
 }
 
-// Heapify the heap from the given index
+// Swap the nodes down until the smallest node is the current node
 void heapifyDown(MinHeap *heap, int index) {
     int smallest = index;
     int left = 2 * index + 1;
@@ -42,14 +47,13 @@ void heapifyDown(MinHeap *heap, int index) {
     if (right < heap->size && heap->nodes[right].value < heap->nodes[smallest].value)
         smallest = right;
     
-    // If the smallest node is not the current node, swap them and heapify the new node
     if (smallest != index) {
         swap(&heap->nodes[index], &heap->nodes[smallest]);
         heapifyDown(heap, smallest);
     }
 }
 
-// Heapify the heap from the given index
+// Swap the nodes up until the smallest node is the parent node
 void heapifyUp(MinHeap *heap, int index) {
     int parent = (index - 1) / 2;
     
@@ -126,6 +130,7 @@ int main() {
         
         HeapNode minNode = extractMin(heap);
         
+        // If the sequence from the minNode has more elements, insert the next element in the heap
         if (minNode.element_idx + 1 < sizes[minNode.vector_idx]) {
             minNode.element_idx++;
             minNode.value = vectors[minNode.vector_idx][minNode.element_idx];
