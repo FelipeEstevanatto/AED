@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* table entry: */
-struct HashNode {
+
+typedef struct HashNode {
     struct HashNode *next;
     char *key; /* defined name */
     char *value; /* replacement text */
-};
+} HashNode;
 
 /* Create hash value from string */
 unsigned hash(char *str, int hashSize)
@@ -19,9 +19,9 @@ unsigned hash(char *str, int hashSize)
 }
 
 /* Look for string in the hashTable */
-struct HashNode *lookup(char *str, struct HashNode **hashTable, int hashSize)
+HashNode *lookup(char *str, HashNode **hashTable, int hashSize)
 {
-    struct HashNode *node;
+    HashNode *node;
     for (node = hashTable[hash(str, hashSize)]; node != NULL; node = node->next)
         if (strcmp(str, node->key) == 0)
           return node; /* found */
@@ -29,12 +29,12 @@ struct HashNode *lookup(char *str, struct HashNode **hashTable, int hashSize)
 }
 
 /* Put (key, value) in hashTable */
-struct HashNode *insert(char *key, char *value, struct HashNode **hashTable, int hashSize)
+HashNode *insert(char *key, char *value, HashNode **hashTable, int hashSize)
 {
-    struct HashNode *node;
+    HashNode *node;
     unsigned hashValue;
     if ((node = lookup(key, hashTable, hashSize)) == NULL) { /* not found */
-        node = (struct HashNode *) malloc(sizeof(*node));
+        node = (HashNode *) malloc(sizeof(*node));
         if (node == NULL || (node->key = strdup(key)) == NULL)
           return NULL;
         hashValue = hash(key, hashSize);
@@ -47,8 +47,8 @@ struct HashNode *insert(char *key, char *value, struct HashNode **hashTable, int
     return node;
 }
 
-void printDictionary(struct HashNode **hashTable, int hashSize) {
-    struct HashNode *node;
+void printDictionary(HashNode **hashTable, int hashSize) {
+    HashNode *node;
     for (int i = 0; i < hashSize; i++) {
         for (node = hashTable[i]; node != NULL; node = node->next) {
             printf("Word: %s, Definition: %s\n", node->key, node->value);
@@ -63,7 +63,7 @@ int main() {
 
     scanf("%d %d", &knownTerms, &numberOfLines);
 
-    struct HashNode **hashTable = (struct HashNode **) malloc(knownTerms * sizeof(struct HashNode *));
+    HashNode **hashTable = (HashNode **) malloc(knownTerms * sizeof(HashNode *));
     int hashSize = knownTerms;
 
     // Initialize the hash table
@@ -92,7 +92,7 @@ int main() {
         // break line into words with strtok
         char *word = strtok(lines[i], " ");
         while (word != NULL) {
-            struct HashNode *entry = lookup(word, hashTable, hashSize);
+            HashNode *entry = lookup(word, hashTable, hashSize);
             if (entry != NULL) {
                 printf("%s ", entry->value);
             } else {
