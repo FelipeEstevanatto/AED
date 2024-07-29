@@ -2,109 +2,99 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct nlist { /* table entry: */
-    struct nlist *next; /* next entry in chain */
-    char *name; /* defined name */
-    char *defn; /* replacement text */
+struct HashNode { /* table entry: */
+    struct HashNode *next; /* next entry in chain */
+    char *key; /* defined name */
+    char *value; /* replacement text */
 };
 
 #define HASHSIZE 101
-static struct nlist *hashtab[HASHSIZE]; /* pointer table */
 
 /* hash: form hash value for string s */
-unsigned hash(char *s)
+unsigned hash(char *str)
 {
-    unsigned hashval;
-    for (hashval = 0; *s != '\0'; s++)
-      hashval = *s + 31 * hashval;
-    return hashval % HASHSIZE;
+    unsigned hashValue;
+    for (hashValue = 0; *str != '\0'; str++)
+      hashValue = *str + 31 * hashValue;
+    return hashValue % HASHSIZE;
 }
 
-/* lookup: look for string in hashtab */
-struct nlist *lookup(char *string)
+/* lookup: look for str in hashTable */
+struct HashNode *lookup(char *str, struct HashNode *hashTable[])
 {
-    struct nlist *np;
-    for (np = hashtab[hash(string)]; np != NULL; np = np->next)
-        if (strcmp(string, np->name) == 0)
-          return np; /* found */
+    struct HashNode *node;
+    for (node = hashTable[hash(str)]; node != NULL; node = node->next)
+        if (strcmp(str, node->key) == 0)
+          return node; /* found */
     return NULL; /* not found */
 }
 
-//char *strdup(char *);
-/* insert: put (name, defn) in hashtab */
-struct nlist *insert(char *name, char *defn)
+/* install: put (key, value) in hashTable */
+struct HashNode *install(char *key, char *value, struct HashNode *hashTable[])
 {
-    struct nlist *np;
-    unsigned hashval;
-    if ((np = lookup(name)) == NULL) { /* not found */
-        np = (struct nlist *) malloc(sizeof(*np));
-        if (np == NULL || (np->name = strdup(name)) == NULL)
+    struct HashNode *node;
+    unsigned hashValue;
+    if ((node = lookup(key, hashTable)) == NULL) { /* not found */
+        node = (struct HashNode *) malloc(sizeof(*node));
+        if (node == NULL || (node->key = strdup(key)) == NULL)
           return NULL;
-        hashval = hash(name);
-        np->next = hashtab[hashval];
-        hashtab[hashval] = np;
+        hashValue = hash(key);
+        node->next = hashTable[hashValue];
+        hashTable[hashValue] = node;
     } else /* already there */
-        free((void *) np->defn); /*free previous defn */
-    if ((np->defn = strdup(defn)) == NULL)
+        free((void *) node->value); /*free previous value */
+    if ((node->value = strdup(value)) == NULL)
        return NULL;
-    return np;
+    return node;
 }
 
-// char *strdup(char *s) /* make a duplicate of s */
-// {
-//     char *p;
-//     p = (char *) malloc(strlen(s)+1); /* +1 for ’\0’ */
-//     if (p != NULL)
-//        strcpy(p, s);
-//     return p;
-// }
-
-void printDictionary() {
-    struct nlist *entry;
+void printDictionary(struct HashNode *hashTable[]) {
+    struct HashNode *node;
     for (int i = 0; i < HASHSIZE; i++) {
-        entry = hashtab[i];
-        while (entry != NULL) {
-            printf("%s: %s\n", entry->name, entry->defn);
-            entry = entry->next;
+        for (node = hashTable[i]; node != NULL; node = node->next) {
+            printf("Word: %s, Definition: %s\n", node->key, node->value);
         }
     }
 }
 
 int main() {
 
-    int knowTerms = 0;
-    int nOfLines = 0;
+    int knownTerms = 0;
+    int numberOfLines = 0;
 
-    scanf("%d %d", &knowTerms, &nOfLines);
+    scanf("%d %d", &knownTerms, &numberOfLines);
+
+    struct HashNode *hashTable[HASHSIZE];
 
     // Initialize the hash table
     for (int i = 0; i < HASHSIZE; i++) {
-        hashtab[i] = NULL;
+        hashTable[i] = NULL;
     }
 
     char word[100];
     char translation[100];
-    for (int i=0; i< knowTerms; i++) {
+    for (int i = 0; i < knownTerms; i++) {
+        // get the words
         scanf("%s", word);
         // scanf accept spaces
         scanf(" %[^\n]s", translation);
 
-        insert(word, translation);
+        install(word, translation, hashTable);
     }
 
-    char lines[nOfLines][100];
+    char lines[numberOfLines][100];
 
-    for (int i=0; i<nOfLines; i++) {
+    for (int i=0; i<numberOfLines; i++) {
         scanf(" %[^\n]s", lines[i]);
     }
 
-    for (int i=0; i<nOfLines; i++) {
+    for (int i=0; i<numberOfLines; i++) {
         // break line into words with strtok
         char *word = strtok(lines[i], " ");
         while (word != NULL) {
-            struct nlist *entry = lookup(word);
+            struct HashNode *entry = lookup(word, hashTable);
             if (entry != NULL) {
-                printf("%s ", entry->defn);
+                printf("%s ", entry->value);
             } else {
                 printf("%s ", word);
             }
