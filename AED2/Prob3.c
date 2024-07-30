@@ -2,14 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct HashNode {
     struct HashNode *next;
     char *key; /* defined name */
     char *value; /* replacement text */
 } HashNode;
 
-/* Create hash value from string */
+/* Create hash value from string (31 is an arbitraty value) */
 unsigned hash(char *str, int hashSize)
 {
     unsigned hashValue;
@@ -21,29 +20,50 @@ unsigned hash(char *str, int hashSize)
 /* Look for string in the hashTable */
 HashNode *lookup(char *str, HashNode **hashTable, int hashSize)
 {
-    HashNode *node;
-    for (node = hashTable[hash(str, hashSize)]; node != NULL; node = node->next)
-        if (strcmp(str, node->key) == 0)
-          return node; /* found */
+    unsigned hashValue = hash(str, hashSize);
+    HashNode *node = hashTable[hashValue];
+
+    while (node != NULL) {
+        if (strcmp(str, node->key) == 0) {
+            return node; /* found */
+        }
+        node = node->next;
+    }
+    
     return NULL; /* not found */
 }
 
-/* Put (key, value) in hashTable */
+/* Put (key, value) in hashTable, and return the node */
 HashNode *insert(char *key, char *value, HashNode **hashTable, int hashSize)
 {
-    HashNode *node;
     unsigned hashValue;
-    if ((node = lookup(key, hashTable, hashSize)) == NULL) { /* not found */
-        node = (HashNode *) malloc(sizeof(*node));
-        if (node == NULL || (node->key = strdup(key)) == NULL)
-          return NULL;
-        hashValue = hash(key, hashSize);
-        node->next = hashTable[hashValue];
-        hashTable[hashValue] = node;
-    } else /* already there */
-        free((void *) node->value); /*free previous value */
-    if ((node->value = strdup(value)) == NULL)
-       return NULL;
+    HashNode *node = lookup(key, hashTable, hashSize);
+
+    if (node != NULL) {
+        /* Key found, update the value */
+        free(node->value);
+        node->value = strdup(value);
+        if (node->value == NULL) return NULL;
+        return node;
+    }
+
+    /* Key not found, create a new node */
+    node = (HashNode *) malloc(sizeof(HashNode));
+    if (node == NULL) return NULL;
+
+    node->key = strdup(key);
+    node->value = strdup(value);
+    if (node->key == NULL || node->value == NULL) {
+        free(node->key);
+        free(node);
+        return NULL;
+    }
+
+    /* Insert the node in the hashTable */
+    hashValue = hash(key, hashSize);
+    node->next = hashTable[hashValue];
+    hashTable[hashValue] = node;
+
     return node;
 }
 
@@ -73,8 +93,8 @@ int main() {
 
     char word[100];
     char translation[100];
+    // get the words
     for (int i = 0; i < knownTerms; i++) {
-        // get the words
         scanf("%s", word);
         // scanf accept spaces
         scanf(" %[^\n]s", translation);
@@ -91,6 +111,7 @@ int main() {
     for (int i=0; i < numberOfLines; i++) {
         // break line into words with strtok
         char *word = strtok(lines[i], " ");
+
         while (word != NULL) {
             HashNode *entry = lookup(word, hashTable, hashSize);
             if (entry != NULL) {
