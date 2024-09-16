@@ -61,30 +61,43 @@ struct Node *minValueNode(struct Node *node) {
   return current;
 }
 
+// Helper function to replace one subtree as a child of its parent with another subtree
+void transplant(struct Node **root, struct Node *u, struct Node *v) {
+    if (u->parent == NULL) {
+        *root = v;
+    } else if (u == u->parent->left) {
+        u->parent->left = v;
+    } else {
+        u->parent->right = v;
+    }
+    if (v != NULL) {
+        v->parent = u->parent;
+    }
+}
+
 // Remove a node from the tree
-struct Node *delete(struct Node *node, int data)
+struct Node *deleteNode(struct Node *node, int data)
 {
     if (node == NULL) return node;
 
     // Find the node to be deleted
     if (data < node->data)
-        node->left = delete(node->left, data);
+        node->left = deleteNode(node->left, data);
     else if (data > node->data)
-        node->right = delete(node->right, data);
+        node->right = deleteNode(node->right, data);
     else {
         // If node has one child or no child
         if (node->left == NULL) {
-            struct Node *temp = node->right;
+            transplant(&root, node, node->right);
             free(node);
-            return temp;
         }
         else if (node->right == NULL) {
-            struct Node *temp = node->left;
+            transplant(&root, node, node->left);
             free(node);
-            return temp;
         }
 
         // Node has two children
+        // Find the inorder successor (smallest in the right subtree)
         struct Node *temp = node->right;
         while (temp->left != NULL) temp = temp->left;
 
@@ -92,10 +105,10 @@ struct Node *delete(struct Node *node, int data)
         node->data = temp->data;
 
         // Delete the inorder successor
-        node->right = delete(node->right, temp->data);
+        node->right = deleteNode(node->right, temp->data);
     }
 
-    return node;
+    return root;
 }
 
 void inorder(struct Node *node)
@@ -117,7 +130,7 @@ int main()
     insert(root, 70);
     insert(root, 20);
 
-    delete(root, 30);
+    deleteNode(root, 30);
 
     printf("Inorder traversal of the given tree: ");
     inorder(root);
